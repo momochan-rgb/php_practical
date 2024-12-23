@@ -1,12 +1,11 @@
 <?php
 
-require_once ROOT_PATH.'Controllers/Controller.php';
+require_once ROOT_PATH . 'Controllers/Controller.php';
 require_once ROOT_PATH . 'Models/User.php';
 
 class UserController extends Controller
 {
-    public function logIn()
-    {
+    public function logIn(){
         if(is_numeric($this->getAuth())){
             // ログイン中の場合はトップページへリダイレクト
             header('Location: /');
@@ -19,13 +18,7 @@ class UserController extends Controller
         $this->view('user/login');
     }
 
-    public function getAuth()
-    {
-        return $_SESSION['auth'] ?? false;
-    }
-
-    public function signUp()
-    {
+    public function signUp(){
         if(is_numeric($this->getAuth())){
             // ログイン中の場合はトップページへリダイレクト
             header('Location: /');
@@ -37,12 +30,7 @@ class UserController extends Controller
         $_SESSION['post'] = [];
         $this->view('user/signup', ['errorMessage' => $errorMessage, 'post' => $post]);
     }
-    public function logOut()
-    {
-        $_SESSION['auth'] = false;
-        header('Location: /');
-        exit();
-    }
+
     public function create()
     {
         $errorMessages = [];
@@ -94,6 +82,22 @@ class UserController extends Controller
             }
         }
     }
+    /**
+     * ログイン状態を取得する
+     * @return string|false ログイン状態の場合はuserId  未ログイン状態の場合はfalseを返却する
+     */
+    public function getAuth()
+    {
+        return $_SESSION['auth'] ?? false;
+    }
+
+    public function logOut()
+    {
+        $_SESSION['auth'] = false;
+        header('Location: /');
+        exit();
+    }
+
     public function certification(){
         $errorMessages = [];
         if(empty($_POST['email'])){
@@ -127,6 +131,7 @@ class UserController extends Controller
             }
         }
     }
+
     public function myPage(){
         $userId = $this->getAuth();
         if($userId === false){
@@ -138,6 +143,7 @@ class UserController extends Controller
         $result = $user->getMyPage($userId);
         $this->view('user/mypage', ['data' => $result, 'auth' => $userId]);
     }
+
     public function edit(){
         $userId = $this->getAuth();
         if($userId === false){
@@ -158,6 +164,7 @@ class UserController extends Controller
             $this->view('user/edit', ['data' => $post,   'auth' => $userId, 'errorMessages' => $errorMessages]);
         }
     }
+
     public function update(){
         $errorMessages = [];
 
@@ -215,5 +222,18 @@ class UserController extends Controller
             }
         }
     }
-}
 
+    public function delete(){
+        $userId = $_SESSION['auth'] ?? false;
+        if($userId === false){
+            header('Location: /');
+            exit();
+        }
+        $user = new User;
+        $user->deleteUserAccount($userId);
+        $_SESSION['auth'] = false;
+        header('Location: /');
+        exit();
+    }
+
+}

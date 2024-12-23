@@ -17,6 +17,7 @@ function route($path, $httpMethod)
                         $methodName = '';
                 }
                 break;
+
             case 'user':
                 $controllerName = 'UserController';
                 switch ($case) {
@@ -44,11 +45,14 @@ function route($path, $httpMethod)
                     case ['update', 'post']:
                         $methodName = 'update';
                         break;
+                    case ['delete', 'get']:
+                        $methodName = 'delete';
+                        break;
+                    default:
+                        $controllerName = '';
+                        $methodName = '';
                 }
                 break;
-            default:
-                $controllerName = '';
-                $methodName = '';
         }
         require_once(ROOT_PATH."Controllers/{$controllerName}.php");
 
